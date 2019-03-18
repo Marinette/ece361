@@ -47,7 +47,7 @@ void connect_to_server(client_info *connection, char *address, char *port) {
         connection->address.sin_port = htons(atoi(port));
         
         //CONNECT TO THE SOCKET!
-        if (connect(connection->socket, (struct sockaddr*)connection->address, sizeof(connection->address)) == -1){
+        if (connect(connection->socket, (struct sockaddr*)&connection->address, sizeof(connection->address)) == -1){
             printf("Error connecting to socket\n");
             exit(1);
         }
