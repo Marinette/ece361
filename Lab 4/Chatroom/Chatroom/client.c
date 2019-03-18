@@ -137,8 +137,6 @@ int main(int argc, char **argv) {
     
     while(1) {
         printf("Type command to terminal\n");
-        fflush(stdin);
-        
         //checking stuff
         FD_ZERO(&file_descrip);
         FD_SET(STDIN_FILENO, &file_descrip);
