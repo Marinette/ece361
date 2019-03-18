@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
     n = write(newsockfd,"I got your message",18);
     if (n < 0)
         error("ERROR writing to socket");
+    
+    printf("Exiting server main function");
     return 0;
     
 }
