@@ -12,9 +12,7 @@
 #include <math.h>
 #include "server.h"
 
-#define SERVERPORT "5550"
-#define MYPORT SERVERPORT    // the port users will be connecting to
-#define MAXBUFLEN 100
+#define MAXBUFFERLEN 256
 
 
 void send_username(client_info *connection) {
@@ -71,27 +69,14 @@ void connect_to_server(client_info *connection, char *address, char *port) {
     printf("Successfully connected to server with credentials %s\n", connection->username);
 }
 
-void send_msg(client_info *connection, int msgtype, char *message_in) {
-    
-    message msg;
-    msg.type = msgtype;
-    strncpy(msg.message , message_in, (int)sizeof(message_in));
-    strncpy(msg.sender , connection->username, (int)sizeof(connection->username));
-    
-    if(send(connection->socket, (void*)&msg, sizeof(msg), 0)<0) {
-        printf("Error sending message to server.\n");
-        exit(1);
-    }
-}
-
 void parser(client_info *connection, char* msg, char* _sendee){
     
     int msgtype;
     message message;
-    message.sendee = "";
-    if(strcmp(msg, "quit") == 0)
+    message.sendee = NULL;
+    if(strcmp(msg, "exit") == 0)
         stop_client(connection);
-    else if(strcmp(msg,"send") == 0){
+    else if(strcmp(msg,"private") == 0){
         msgtype = PM;
         message.sendee = _sendee;
     }
@@ -127,11 +112,8 @@ void server_msg_handler(client_info *connection) {
     }
     
     switch(msg.type){
-        case LIST:
-            printf("%s\n", connection->username);
         case PM:
-            if(strcmp(msg.sendee, connection->username) == 0) //ONLY PRINT IF U R THE SENDEE this is kinda bad security-wise but idc bc im not in computer security
-                printf("%s: %s\n",msg.sender,msg.message);
+            printf("%s: %s\n",msg.sender,msg.message);
         case BROADCAST:
             printf("%s: %s\n",msg.sender,msg.message);
         default:

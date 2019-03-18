@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #define MAX_MESSAGE_LEN 1000
+#define MAX_USERS 10
 
 typedef enum{
     DISCONNECT,
