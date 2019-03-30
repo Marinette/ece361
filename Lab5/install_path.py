@@ -26,16 +26,17 @@ def installPathFlows(macHostA, macHostB, pathA2B):
 
 # Returns List of neighbouring DPIDs
 def findNeighbours(dpid):
-	if dpid < 0:
+	if type(dpid) not in (int, long) or dpid < 0:
 		print dpid
-		print type(dpid)
 		raise TypeError("DPID should be a positive integer value")
-	else:
-		neighbours = []
-		links = ryu.listSwitchLinks(dpid)
-		links = links['links']
-		neighbours = [ dict(endpoint['dpid'] for endpoint in links if endpoint['dpid'] != dipid )] # note the dict removes dupes
-		return neighbours,links
+
+	neighbours = []
+	links = ryu.listSwitchLinks(dpid)
+    links = links['links']
+    for link in links:
+        
+    neighbours = [ dict(endpoint['dpid'] for endpoint in links if endpoint['dpid'] != dipid )] # note the dict removes dupes
+    return neighbours,links
 
 
 # Optional helper function if you use suggested return format
@@ -117,10 +118,10 @@ def dijkstras(macHostA, macHostB):
     ##### YOUR CODE HERE ##### BFS
     packet = ryu.getMacIngressPort(macHostB)
     dpidEnd = packet['dpid']
-    
+
     packet = ryu.getMacIngressPort(macHostA)
     dpidStart = packet['dpid']
-    
+
     pathAtoB = bfs(dpidStart, dpidEnd)
 
     # Some debugging output
