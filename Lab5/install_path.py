@@ -24,7 +24,23 @@ def main(macHostA, macHostB):
 
 # Installs end-to-end bi-directional flows in all switches
 def installPathFlows(macHostA, macHostB, pathA2B):
-    ##### YOUR CODE HERE ###
+    for link in pathA2B:
+        flow1 = ryu_ofctl.FlowEntry()
+        flow2 = ryu_ofctl.FlowEntry()
+
+        action1= ryu_ofctl.OutputAction(link['out_port'])
+        action2= ryu_ofctl.OutputAction(link['in_port'])
+
+        flow.in_port = link['in_port']
+        flow2.in_port = link['out_port']
+
+        flow.addAction(action1)
+        flow2.addAction(action2)
+
+        ryu_ofctl.insertFlow(link['dpid'], flow1)
+        ryu_ofctl.insertFlow(link['dpid'], flow2)
+        
+    print "added flows"
     return
 
 # Returns List of neighbouring DPIDs
