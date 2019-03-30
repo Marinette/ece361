@@ -33,9 +33,14 @@ def findNeighbours(dpid):
 	neighbours = []
 	links = ryu.listSwitchLinks(dpid)
     links = links['links']
+    
     for link in links:
-        
-    neighbours = [ dict(endpoint['dpid'] for endpoint in links if endpoint['dpid'] != dipid )] # note the dict removes dupes
+        if link['endpoint1']['dpid'] != dpid:
+            neighbours.append(link['endpoint1']['dpid'])
+        else:
+            neighbours.append(link['endpoint2']['dpid'])
+
+    neighbours = [dict(neighbours)]
     return neighbours,links
 
 
