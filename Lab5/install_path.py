@@ -32,7 +32,7 @@ def findNeighbours(dpid):
 	if dpid < 0:
 		print dpid
 		raise TypeError("DPID should be a positive integer value")
-	
+
 	else:
 		neighbours = []
 		links = ryu.listSwitchLinks(dpid)
@@ -45,7 +45,7 @@ def findNeighbours(dpid):
 				neighbours.append(link['endpoint2']['dpid'])
 		neighbours = list(set(neighbours))
 		print "nearest neighbours are" ,neighbours
-		return neighbours,links
+		return neighbours
 
 
 # Optional helper function if you use suggested return format
@@ -59,8 +59,8 @@ def nodeDict(dpid, in_port, out_port):
 neighbour_links, list of dictionaries of the links, one endpoint is the current
 switch dpid and the other is the neighbour switch dpid'''
 
-def resolve_link(dpid_to, neighbour_links):
-    for connection in neighbour_links:
+def resolve_link(dpid_to, links):
+    for connection in links:
         if connection['endpoint1']['dpid'] is dpid_to:
             return nodeDict(dpid_to,connection['endpoint2']['port'],connection['endpoint1']['port'])
 
@@ -68,10 +68,14 @@ def resolve_link(dpid_to, neighbour_links):
             return nodeDict(dpid_to, connection['endpoint1']['port'],connection['endpoint2']['port'])
 
 
-def backtrace(parent,start,end):
-    id = end;
-    path = []
+def backtrace(parent,start,end,p_start,p_end):
+    if(start == end):
+        return nodeDict(start,p_start,p_end)
 
+    path = []
+    path.append(end) # add the end
+
+    id = parent[end] # start with parent of the end if parent of the end is start, won't go through loop
     while(id != start):
         path.append(id)
         id = parent[id]
@@ -81,8 +85,9 @@ def backtrace(parent,start,end):
 
     ret = [] # now we make the dictionaries of the ports u go into
     for id,next_id in zip(path, path[1:]+[path[0]]):
-        neighbours, links = findNeighbours(id)
-        ret.append(resolve_link(next_id,links))
+        links = ryu.listSwitchLinks(dpid)['links']
+        neighbours = findNeighbours(id)
+        ret.append(resolve_link(id,next_id,links))
 
     return ret
 
@@ -95,24 +100,27 @@ def backtrace(parent,start,end):
 #                   {'dpid': 4, 'in_port': 3, 'out_port': 1},
 #               ]
 # Raises exception if either ingress or egress ports for the MACs can't be found
-def bfs(start,end):
+def bfs(start,end, portStart, portEnd):
 	print "start, end is" ,start,end
 	parent = {}
+    parent[start] = start # some stuff
 	queue = []
 	queue.append(start)
-	
+
 	while(queue):
 		id = queue.pop(0)
 		print id, end
 		if id == end:
-			print "found end"
-			return backtrace(parent,start,end)
+			print "found ending dip"
+			return backtrace(parent,start,end, portStart, portEnd)
 
 		neighbours, links = findNeighbours(id)
 		print neighbours
 		for neighbour in neighbours:
+            dpid = neighbour['dpid']
+            port = neighbour['port']
 			if neighbour not in queue:
-				parent[neighbour] = id
+				parent[neighbour] = (dpid,port)
 				queue.append(neighbour)
 
 def getAllLinks():
@@ -131,11 +139,13 @@ def dijkstras(macHostA, macHostB):
     ##### YOUR CODE HERE ##### BFS
     packet = ryu.getMacIngressPort(macHostB)
     dpidEnd = packet['dpid']
+    portEnd = packet['port']
 
     packet = ryu.getMacIngressPort(macHostA)
     dpidStart = packet['dpid']
+    portStart = packet['port']
     print "doing BFS"
-    pathAtoB = bfs(dpidStart, dpidEnd)
+    pathAtoB = bfs(dpidStart, dpidEnd, portStart, portEnd)
 
     # Some debugging output
     #print "leastDistNeighbour = %s" % leastDistNeighbour
