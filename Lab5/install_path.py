@@ -3,7 +3,7 @@
 import sys
 import re # For regex
 
-import ryu_ofctl
+import ryu_ofctl as ryu
 from ryu_ofctl import *
 
 def main(macHostA, macHostB):
@@ -22,7 +22,6 @@ def main(macHostA, macHostB):
 # Installs end-to-end bi-directional flows in all switches
 def installPathFlows(macHostA, macHostB, pathA2B):
     ##### YOUR CODE HERE #####
-
     return
 
 # Returns List of neighbouring DPIDs
@@ -32,9 +31,52 @@ def findNeighbours(dpid):
 
     neighbours = []
 
-    ##### YOUR CODE HERE #####
+    ##### YOUR CODE HERE ##### I hope this works :^)))
+    links = ryu.listSwitchLinks(dpid)
+    links = links['links']
+    neighbours = [ dict(endpoint['dpid'] for endpoint in links if endpoint['dpid'] not dipid )] # note the dict removes dupes
 
-    return neighbours
+    return neighbours,links
+
+
+# Optional helper function if you use suggested return format
+def nodeDict(dpid, in_port, out_port):
+    assert type(dpid) in (int, long)
+    assert type(in_port) is int
+    assert type(out_port) is int
+    return {'dpid': dpid, 'in_port': in_port, 'out_port': out_port}
+
+'''accepts as parameters: dpid_to, dpid of the next switches
+neighbour_links, list of dictionaries of the links, one endpoint is the current
+switch dpid and the other is the neighbour switch dpid'''
+
+def resolve_link(dpid_to, neighbour_links):
+    for connection in neighbour_links:
+        if connection['endpoint1']['dpid'] is dpid_to:
+            return(nodeDict(dpid_to,connection['endpoint2']['port']),connection['endpoint1']['port']))
+
+        else if connection['endpoint2']['dpid'] is dpid_to:
+            return(nodeDict(dpid_to, connection['endpoint1']['port'],connection['endpoint2']['port']))
+
+
+def backtrace(parent,start,end):
+    id = end;
+    path = []
+
+    while(id not start):
+        path.append(id)
+        id = parent[id]
+
+    path.append(id) # add the start to it
+    path = path[::-1]# go from start -> end
+
+    ret = [] # now we make the dictionaries of the ports u go into
+    for id,next_id in zip(path, path[1:]+[path[0]]):
+        neighbours, links = findNeighbours(id)
+        ret.append(resolve_link(next_id),links)
+
+    return ret
+
 
 # Calculates least distance path between A and B
 # Returns detailed path (switch ID, input port, output port)
@@ -44,22 +86,40 @@ def findNeighbours(dpid):
 #                   {'dpid': 4, 'in_port': 3, 'out_port': 1},
 #               ]
 # Raises exception if either ingress or egress ports for the MACs can't be found
+def bfs(graph,start,end):
+    parent = {}
+    queue = []
+    queue.append(start)
+
+    while(queue):
+        id = queue.pop(0)
+
+        if id == end:
+            return backtrace(parent,start,end)
+
+        for neighbour, links in findNeighbours(id):
+            if neighbour not in queue:
+                parent[neighbour] = id
+                queue.append(neighbour)
+
+def getAllLinks():
+    links = ryu.getLinks()
+    links = links['links']
+    return([dict(endpoint['dpid'] for endpoint in links)]) # should return all dpids (no duplicates)
+
 def dijkstras(macHostA, macHostB):
 
-    # Optional helper function if you use suggested return format
-    def nodeDict(dpid, in_port, out_port):
-        assert type(dpid) in (int, long)
-        assert type(in_port) is int
-        assert type(out_port) is int
-        return {'dpid': dpid, 'in_port': in_port, 'out_port': out_port}
-
     # Optional variables and data structures
-    INFINITY = float('inf')
-    distanceFromA = {} # Key = node, value = distance
-    leastDistNeighbour = {} # Key = node, value = neighbour node with least distance from A
-    pathAtoB = [] # Holds path information
+    # INFINITY = float('inf')
+    # distanceFromA = {} # Key = node, value = distance
+    # leastDistNeighbour = {} # Key = node, value = neighbour node with least distance from A
+    # pathAtoB = [] # Holds path information
 
-    ##### YOUR CODE HERE #####
+    ##### YOUR CODE HERE ##### BFS
+    dpidStart, portStart = ryu.getMacIngressPort(macHostA)
+    dpidEnd, portEnd, ryu.getMacIngressPort(macHostB)
+    graph = getAllLinks()
+    pathAtoB = bfs(graph,dpidStart, dpidEnd)
 
     # Some debugging output
     #print "leastDistNeighbour = %s" % leastDistNeighbour
