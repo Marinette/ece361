@@ -24,7 +24,7 @@ def main(macHostA, macHostB):
 
 # Installs end-to-end bi-directional flows in all switches
 def installPathFlows(macHostA, macHostB, pathA2B):
-    ##### YOUR CODE HERE #####
+    ##### YOUR CODE HERE ###
     return
 
 # Returns List of neighbouring DPIDs
@@ -62,15 +62,15 @@ switch dpid and the other is the neighbour switch dpid'''
 def resolve_link(dpid_to, links):
     for connection in links:
         if connection['endpoint1']['dpid'] is dpid_to:
-            return nodeDict(dpid_to,connection['endpoint2']['port'],connection['endpoint1']['port'])
+            return nodeDict(int(dpid_to),connection['endpoint2']['port'],connection['endpoint1']['port'])
 
         elif connection['endpoint2']['dpid'] is dpid_to:
-            return nodeDict(dpid_to, connection['endpoint1']['port'],connection['endpoint2']['port'])
+            return nodeDict(int(dpid_to), connection['endpoint1']['port'],connection['endpoint2']['port'])
 
 
 def backtrace(parent,start,end,p_start,p_end):
     if(start == end):
-        return nodeDict(start,p_start,p_end)
+        return nodeDict(int(start),int(p_start),int(p_end))
 
     path = []
     path.append(end) # add the end
@@ -103,7 +103,7 @@ def backtrace(parent,start,end,p_start,p_end):
 def bfs(start,end, portStart, portEnd):
 	print "start, end is" ,start,end
 	parent = {}
-    parent[start] = start # some stuff
+	parent[start] = start # some stuff
 	queue = []
 	queue.append(start)
 
@@ -117,10 +117,8 @@ def bfs(start,end, portStart, portEnd):
 		neighbours, links = findNeighbours(id)
 		print neighbours
 		for neighbour in neighbours:
-            dpid = neighbour['dpid']
-            port = neighbour['port']
 			if neighbour not in queue:
-				parent[neighbour] = (dpid,port)
+				parent[neighbour] = id
 				queue.append(neighbour)
 
 def getAllLinks():
