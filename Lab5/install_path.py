@@ -26,16 +26,14 @@ def installPathFlows(macHostA, macHostB, pathA2B):
 
 # Returns List of neighbouring DPIDs
 def findNeighbours(dpid):
-    if type(dpid) not in (int, long) or dpid < 0:
-        raise TypeError("DPID should be a positive integer value")
-
-    neighbours = []
-
-    ##### YOUR CODE HERE ##### I hope this works :^)))
-    links = ryu.listSwitchLinks(dpid)
+	if type(dpid) not in (int, long) or dpid < 0:
+		print dpid
+		raise TypeError("DPID should be a positive integer value")
+	
+	neighbours = []
+	links = ryu.listSwitchLinks(dpid)
     links = links['links']
-    neighbours = [ dict(endpoint['dpid'] for endpoint in links if endpoint['dpid'] not dipid )] # note the dict removes dupes
-
+    neighbours = [ dict(endpoint['dpid'] for endpoint in links if endpoint['dpid'] != dipid )] # note the dict removes dupes
     return neighbours,links
 
 
@@ -53,17 +51,17 @@ switch dpid and the other is the neighbour switch dpid'''
 def resolve_link(dpid_to, neighbour_links):
     for connection in neighbour_links:
         if connection['endpoint1']['dpid'] is dpid_to:
-            return(nodeDict(dpid_to,connection['endpoint2']['port']),connection['endpoint1']['port']))
+            return nodeDict(dpid_to,connection['endpoint2']['port'],connection['endpoint1']['port'])
 
-        else if connection['endpoint2']['dpid'] is dpid_to:
-            return(nodeDict(dpid_to, connection['endpoint1']['port'],connection['endpoint2']['port']))
+        elif connection['endpoint2']['dpid'] is dpid_to:
+            return nodeDict(dpid_to, connection['endpoint1']['port'],connection['endpoint2']['port'])
 
 
 def backtrace(parent,start,end):
     id = end;
     path = []
 
-    while(id not start):
+    while(id != start):
         path.append(id)
         id = parent[id]
 
@@ -86,7 +84,7 @@ def backtrace(parent,start,end):
 #                   {'dpid': 4, 'in_port': 3, 'out_port': 1},
 #               ]
 # Raises exception if either ingress or egress ports for the MACs can't be found
-def bfs(graph,start,end):
+def bfs(start,end):
     parent = {}
     queue = []
     queue.append(start)
@@ -116,10 +114,13 @@ def dijkstras(macHostA, macHostB):
     # pathAtoB = [] # Holds path information
 
     ##### YOUR CODE HERE ##### BFS
-    dpidStart, portStart = ryu.getMacIngressPort(macHostA)
-    dpidEnd, portEnd, ryu.getMacIngressPort(macHostB)
-    graph = getAllLinks()
-    pathAtoB = bfs(graph,dpidStart, dpidEnd)
+    packet = ryu.getMacIngressPort(macHostB)
+    dpidEnd = packet['dpid']
+    
+    packet = ryu.getMacIngressPort(macHostA)
+    dpidStart = packet['dpid']
+    
+    pathAtoB = bfs(dpidStart, dpidEnd)
 
     # Some debugging output
     #print "leastDistNeighbour = %s" % leastDistNeighbour
