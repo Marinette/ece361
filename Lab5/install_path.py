@@ -26,15 +26,16 @@ def installPathFlows(macHostA, macHostB, pathA2B):
 
 # Returns List of neighbouring DPIDs
 def findNeighbours(dpid):
-	if type(dpid) not in (int, long) or dpid < 0:
+	if dpid < 0:
 		print dpid
+		print type(dpid)
 		raise TypeError("DPID should be a positive integer value")
-	
-	neighbours = []
-	links = ryu.listSwitchLinks(dpid)
-    links = links['links']
-    neighbours = [ dict(endpoint['dpid'] for endpoint in links if endpoint['dpid'] != dipid )] # note the dict removes dupes
-    return neighbours,links
+	else:
+		neighbours = []
+		links = ryu.listSwitchLinks(dpid)
+		links = links['links']
+		neighbours = [ dict(endpoint['dpid'] for endpoint in links if endpoint['dpid'] != dipid )] # note the dict removes dupes
+		return neighbours,links
 
 
 # Optional helper function if you use suggested return format
