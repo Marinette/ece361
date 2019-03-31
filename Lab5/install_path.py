@@ -46,7 +46,6 @@ def installPathFlows(macHostA, macHostB, pathA2B):
 # Returns List of neighbouring DPIDs
 def findNeighbours(dpid):
 	if dpid < 0:
-		print dpid
 		raise TypeError("DPID should be a positive integer value")
 
 	else:
@@ -60,7 +59,7 @@ def findNeighbours(dpid):
 			else:
 				neighbours.append(link['endpoint2']['dpid'])
 		neighbours = list(set(neighbours))
-		print "nearest neighbours are" ,neighbours
+		print "nearest neighbours of", dpid, "are:" ,neighbours
 		return neighbours
 
 
@@ -136,22 +135,15 @@ def bfs(start,end, portStart, portEnd):
 
 	while(queue):
 		id = queue.pop(0)
-		print id, end
 		if id == end:
 			print "found ending dip"
 			return backtrace(parent,start,end, portStart, portEnd)
 
-		neighbours, links = findNeighbours(id)
-		print neighbours
+		neighbours = findNeighbours(id)
 		for neighbour in neighbours:
 			if neighbour not in queue:
 				parent[neighbour] = id
 				queue.append(neighbour)
-
-def getAllLinks():
-    links = ryu.getLinks()
-    links = links['links']
-    return([dict(endpoint['dpid'] for endpoint in links)]) # should return all dpids (no duplicates)
 
 def dijkstras(macHostA, macHostB):
 
