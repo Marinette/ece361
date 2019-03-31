@@ -78,15 +78,15 @@ This function finds the port in the switch that corresponds with the
 dpid desired'''
 
 def find_port(dpid, neighbour_links):
-    print "neighbours:", neighbour_links
+    #print "neighbours:", neighbour_links
     for connection in neighbour_links:
         if connection['endpoint1']['dpid'] == str(dpid):
-            print "dpid:",dpid, "port:", connection['endpoint1']['port']
-            return connection['endpoint1']['port']
+            #print "dpid:",dpid, "port:", connection['endpoint1']['port']
+            return connection['endpoint2']['port'],connection['endpoint1']['port']
 
         elif connection['endpoint2']['dpid'] == str(dpid):
-            print "dpid:",dpid, "port:", connection['endpoint2']['port']
-            return connection['endpoint2']['port']
+            #print "dpid:",dpid, "port:", connection['endpoint2']['port']
+            return connection['endpoint1']['port'], connection['endpoint2']['port']
 
 
 def backtrace(parent,start,end,p_start,p_end):
@@ -106,7 +106,7 @@ def backtrace(parent,start,end,p_start,p_end):
 
     ret = [] # now we make the dictionaries of the ports u go into
     print "path is:",path
-    port_in = p_start
+
     for i in range(0,len(path)):
         id = path[i]
         if id == end:#if it's the dest connect the ports in the switch
@@ -117,13 +117,9 @@ def backtrace(parent,start,end,p_start,p_end):
             print "id is", id, "next id is:" ,next_id
             neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
             #print "neighbours are:", neighbours
-            port_out = find_port(next_id,neighbours)
+            port_out, port_in = find_port(next_id,neighbours) # port_in = port for the next switch, port_out = port for this switch
             print "id is:",id,"port_in:", port_in, "port_out:", port_out
             ret.append(nodeDict(int(id),int(port_in), int(port_out)))
-
-        # find the corresponding port # of current dpid for the next switch
-        neighbour_neighbours = ryu.listSwitchLinks(next_id)['links']
-        port_in = find_port(id,neighbours)
 
 
 # Calculates least distance path between A and B
