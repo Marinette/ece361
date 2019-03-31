@@ -114,7 +114,7 @@ def backtrace(parent,start,end,p_start,p_end):
             return ret
         else:
             next_id = path[i+1]
-            print "next id is:" ,next_id
+            print "id is", id, "next id is:" ,next_id
             neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
             #print "neighbours are:", neighbours
             port_out = find_port(next_id,neighbours)
@@ -162,14 +162,15 @@ def dijkstras(macHostA, macHostB):
     # pathAtoB = [] # Holds path information
 
     ##### YOUR CODE HERE ##### BFS
+    packet = ryu.getMacIngressPort(macHostA)
+    dpidStart = packet['dpid']
+    portStart = packet['port']
+
     packet = ryu.getMacIngressPort(macHostB)
     dpidEnd = packet['dpid']
     portEnd = packet['port']
 
-    packet = ryu.getMacIngressPort(macHostA)
-    dpidStart = packet['dpid']
-    portStart = packet['port']
-    print "doing BFS"
+    print "doing BFS..."
     pathAtoB = bfs(dpidStart, dpidEnd, portStart, portEnd)
 
     # Some debugging output
