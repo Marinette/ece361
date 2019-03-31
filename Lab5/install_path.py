@@ -113,6 +113,7 @@ def backtrace(parent,start,end,p_start,p_end):
             next_id = path[i+1]
             neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
             port_out = find_port(next_id,neighbours)
+            print "id is:",id,"port_in:", port_in, "port_out:", port_out
             ret.append(nodeDict(int(id),int(port_in), int(port_out)))
 
         # find the corresponding port # of current dpid for the next switch
