@@ -80,10 +80,11 @@ dpid desired'''
 def find_port(dpid, neighbour_links):
     for connection in neighbour_links:
         print "connection looking at:" ,connection
-        if connection['endpoint1']['dpid'] is str(dpid):
+        if connection['endpoint1']['dpid'] == str(dpid):
+            print "yes"
             return connection['endpoint1']['port']
 
-        elif connection['endpoint2']['dpid'] is str(dpid):
+        elif connection['endpoint2']['dpid'] == str(dpid):
             return connection['endpoint2']['port']
 
 
@@ -103,7 +104,7 @@ def backtrace(parent,start,end,p_start,p_end):
     path = path[::-1]# go from start -> end
 
     ret = [] # now we make the dictionaries of the ports u go into
-    print "path is:",path
+    #print "path is:",path
     port_in = p_start
     for i in range(0,len(path)):
         id = path[i]
@@ -114,7 +115,7 @@ def backtrace(parent,start,end,p_start,p_end):
             next_id = path[i+1]
             print "next id is:" ,next_id
             neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
-            print "neighbours are:", neighbours
+            #print "neighbours are:", neighbours
             port_out = find_port(next_id,neighbours)
             print "id is:",id,"port_in:", port_in, "port_out:", port_out
             ret.append(nodeDict(int(id),int(port_in), int(port_out)))
