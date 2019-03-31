@@ -27,7 +27,7 @@ def installPathFlows(macHostA, macHostB, pathA2B):
     for link in pathA2B:
         flow1 = ryu.FlowEntry()
         flow2 = ryu.FlowEntry()
-
+        print link
         action1= ryu.OutputAction(link['out_port'])
         action2= ryu.OutputAction(link['in_port'])
 
@@ -59,7 +59,7 @@ def findNeighbours(dpid):
 			else:
 				neighbours.append(link['endpoint2']['dpid'])
 		neighbours = list(set(neighbours))
-		print "nearest neighbours of", dpid, "are:" ,neighbours
+		#print "nearest neighbours of", dpid, "are:" ,neighbours
 		return neighbours
 
 
@@ -79,9 +79,8 @@ dpid desired'''
 
 def find_port(dpid, neighbour_links):
     for connection in neighbour_links:
-        print "connection looking at:" ,connection
+        #print "connection looking at:" ,connection
         if connection['endpoint1']['dpid'] == str(dpid):
-            print "yes"
             return connection['endpoint1']['port']
 
         elif connection['endpoint2']['dpid'] == str(dpid):
@@ -113,11 +112,11 @@ def backtrace(parent,start,end,p_start,p_end):
             return [ret]
         else:
             next_id = path[i+1]
-            print "next id is:" ,next_id
+            #print "next id is:" ,next_id
             neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
             #print "neighbours are:", neighbours
             port_out = find_port(next_id,neighbours)
-            print "id is:",id,"port_in:", port_in, "port_out:", port_out
+            #print "id is:",id,"port_in:", port_in, "port_out:", port_out
             ret.append(nodeDict(int(id),int(port_in), int(port_out)))
 
         # find the corresponding port # of current dpid for the next switch
@@ -134,7 +133,7 @@ def backtrace(parent,start,end,p_start,p_end):
 #               ]
 # Raises exception if either ingress or egress ports for the MACs can't be found
 def bfs(start,end, portStart, portEnd):
-	print "start, end is" ,start,end
+	#print "start, end is" ,start,end
 	parent = {}
 	parent[start] = start # some stuff
 	queue = []
