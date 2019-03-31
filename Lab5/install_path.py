@@ -78,6 +78,7 @@ This function finds the port in the switch that corresponds with the
 dpid desired'''
 
 def find_port(dpid, neighbour_links):
+    print "neighbours:", neighbour_links
     for connection in neighbour_links:
         if connection['endpoint1']['dpid'] == str(dpid):
             print "dpid:",dpid, "port:", connection['endpoint1']['port']
