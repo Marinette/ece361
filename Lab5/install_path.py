@@ -27,7 +27,7 @@ def installPathFlows(macHostA, macHostB, pathA2B):
     for link in pathA2B:
         flow1 = ryu.FlowEntry()
         flow2 = ryu.FlowEntry()
-        print link
+        #print link
         action1= ryu.OutputAction(link['out_port'])
         action2= ryu.OutputAction(link['in_port'])
 
@@ -133,7 +133,7 @@ def backtrace(parent,start,end,p_start,p_end):
 #               ]
 # Raises exception if either ingress or egress ports for the MACs can't be found
 def bfs(start,end, portStart, portEnd):
-	print "start, startport is" ,start,portStart
+	#print "start, startport is" ,start,portStart
 	parent = {}
 	parent[start] = start # some stuff
 	queue = []
@@ -142,7 +142,7 @@ def bfs(start,end, portStart, portEnd):
 	while(queue):
 		id = queue.pop(0)
 		if id == end:
-			print "found ending dip"
+			#print "found ending dip"
 			return backtrace(parent,start,end, portStart, portEnd)
 
 		neighbours = findNeighbours(id)
