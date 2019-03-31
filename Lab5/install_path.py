@@ -103,7 +103,7 @@ def backtrace(parent,start,end,p_start,p_end):
     path = path[::-1]# go from start -> end
 
     ret = [] # now we make the dictionaries of the ports u go into
-    #print "path is:",path
+    print "path is:",path
     port_in = p_start
     for i in range(0,len(path)):
         id = path[i]
@@ -112,7 +112,7 @@ def backtrace(parent,start,end,p_start,p_end):
             return ret
         else:
             next_id = path[i+1]
-            #print "next id is:" ,next_id
+            print "next id is:" ,next_id
             neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
             #print "neighbours are:", neighbours
             port_out = find_port(next_id,neighbours)
