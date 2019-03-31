@@ -102,6 +102,7 @@ def backtrace(parent,start,end,p_start,p_end):
     path = path[::-1]# go from start -> end
 
     ret = [] # now we make the dictionaries of the ports u go into
+    print "path is:",path
     port_in = p_start
     for i in range(0,len(path)):
         id = path[i]
