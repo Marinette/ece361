@@ -31,10 +31,10 @@ def installPathFlows(macHostA, macHostB, pathA2B):
         action1= ryu.OutputAction(link['out_port'])
         action2= ryu.OutputAction(link['in_port'])
 
-        flow.in_port = link['in_port']
+        flow1.in_port = link['in_port']
         flow2.in_port = link['out_port']
 
-        flow.addAction(action1)
+        flow1.addAction(action1)
         flow2.addAction(action2)
 
         ryu_ofctl.insertFlow(link['dpid'], flow1)
