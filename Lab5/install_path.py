@@ -105,13 +105,13 @@ def backtrace(parent,start,end,p_start,p_end):
     port_in = p_start
     for i in range(0,len(path)):
         id = path[i]
-        next_id = path[i+1] if (i+1) < len(path) else 0
-        neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
 
         if id == end:#if it's the dest connect the ports in the switch
             ret.append(nodeDict(int(id), int(port_in), int(p_end)))
             return [ret]
         else:
+            next_id = path[i+1]
+            neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
             port_out = find_port(next_id,neighbours)
             ret.append(nodeDict(int(id),int(port_in), int(port_out)))
 
