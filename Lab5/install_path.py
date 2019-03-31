@@ -78,6 +78,7 @@ This function finds the port in the switch that corresponds with the
 dpid desired'''
 
 def find_port(dpid, neighbour_links):
+    dpid = str(dpid)
     for connection in neighbour_links:
         if connection['endpoint1']['dpid'] is dpid:
             return connection['endpoint1']['port']
@@ -106,7 +107,6 @@ def backtrace(parent,start,end,p_start,p_end):
     port_in = p_start
     for i in range(0,len(path)):
         id = path[i]
-
         if id == end:#if it's the dest connect the ports in the switch
             ret.append(nodeDict(int(id), int(port_in), int(p_end)))
             return [ret]
