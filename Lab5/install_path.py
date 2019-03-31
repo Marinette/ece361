@@ -112,7 +112,9 @@ def backtrace(parent,start,end,p_start,p_end):
             return [ret]
         else:
             next_id = path[i+1]
+            print "next id is:" ,next_id
             neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
+            print "neighbours are:", neighbours
             port_out = find_port(next_id,neighbours)
             print "id is:",id,"port_in:", port_in, "port_out:", port_out
             ret.append(nodeDict(int(id),int(port_in), int(port_out)))
