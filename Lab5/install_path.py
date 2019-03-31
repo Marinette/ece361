@@ -79,7 +79,7 @@ dpid desired'''
 
 def find_port(dpid, neighbour_links):
     for connection in neighbour_links:
-        if connection['endpoint1']['dpid'] is DPIDs:
+        if connection['endpoint1']['dpid'] is dpid:
             return connection['endpoint1']['port']
 
         elif connection['endpoint2']['dpid'] is dpid:
