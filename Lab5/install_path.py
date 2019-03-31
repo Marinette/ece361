@@ -39,7 +39,7 @@ def installPathFlows(macHostA, macHostB, pathA2B):
 
         ryu_ofctl.insertFlow(link['dpid'], flow1)
         ryu_ofctl.insertFlow(link['dpid'], flow2)
-        
+
     print "added flows"
     return
 
@@ -73,15 +73,18 @@ def nodeDict(dpid, in_port, out_port):
 
 '''accepts as parameters: dpid_to, dpid of the next switches
 neighbour_links, list of dictionaries of the links, one endpoint is the current
-switch dpid and the other is the neighbour switch dpid'''
+switch dpid and the other is the neighbour switch dpid
 
-def resolve_link(dpid_to, links):
-    for connection in links:
-        if connection['endpoint1']['dpid'] is dpid_to:
-            return nodeDict(int(dpid_to),connection['endpoint2']['port'],connection['endpoint1']['port'])
+This function finds the port in the switch that corresponds with the
+dpid desired'''
 
-        elif connection['endpoint2']['dpid'] is dpid_to:
-            return nodeDict(int(dpid_to), connection['endpoint1']['port'],connection['endpoint2']['port'])
+def find_port(dpid, neighbour_links):
+    for connection in neighbour_links:
+        if connection['endpoint1']['dpid'] is DPIDs:
+            return connection['endpoint1']['port']
+
+        elif connection['endpoint2']['dpid'] is dpid:
+            return connection['endpoint2']['port']
 
 
 def backtrace(parent,start,end,p_start,p_end):
@@ -100,12 +103,20 @@ def backtrace(parent,start,end,p_start,p_end):
     path = path[::-1]# go from start -> end
 
     ret = [] # now we make the dictionaries of the ports u go into
+    port_in = p_start
     for id,next_id in zip(path, path[1:]+[path[0]]):
-        links = ryu.listSwitchLinks(dpid)['links']
-        neighbours = findNeighbours(id)
-        ret.append(resolve_link(id,next_id,links))
+        neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
+        port_out = find_port(next_id,neighbours) #
 
-    return ret
+        if id == end:#if it's the dest connect the ports in the switch
+            ret.append(nodeDict(int(id), int(port_in), int(p_end)))
+            return [ret]
+        else:
+            ret.append(nodeDict(int(id),int(port_in), int(port_out)))
+
+        # find the corresponding port # of current dpid for the next switch
+        neighbour_neighbours = ryu.listSwitchLinks(next_id)['links']
+        port_in = find_port(id,neighbours)
 
 
 # Calculates least distance path between A and B
