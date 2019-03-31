@@ -134,7 +134,7 @@ def backtrace(parent,start,end,p_start,p_end):
 #               ]
 # Raises exception if either ingress or egress ports for the MACs can't be found
 def bfs(start,end, portStart, portEnd):
-	#print "start, end is" ,start,end
+	print "start, startport is" ,start,portStart
 	parent = {}
 	parent[start] = start # some stuff
 	queue = []
