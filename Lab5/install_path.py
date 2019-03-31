@@ -53,7 +53,7 @@ def findNeighbours(dpid):
 		links = ryu.listSwitchLinks(dpid)
 		links = links['links']
 		for link in links:
-			print link
+			#print link
 			if link['endpoint1']['dpid'] != dpid:
 				neighbours.append(link['endpoint1']['dpid'])
 			else:
@@ -103,7 +103,8 @@ def backtrace(parent,start,end,p_start,p_end):
 
     ret = [] # now we make the dictionaries of the ports u go into
     port_in = p_start
-    for id,next_id in zip(path, path[1:]+[path[0]]):
+    for id in path:
+        next_id = next(id)
         neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
 
         if id == end:#if it's the dest connect the ports in the switch
