@@ -107,6 +107,7 @@ def backtrace(parent,start,end,p_start,p_end):
     ret = [] # now we make the dictionaries of the ports u go into
     print "path is:",path
 
+    port_in = p_start
     for i in range(0,len(path)):
         id = path[i]
         if id == end:#if it's the dest connect the ports in the switch
@@ -117,9 +118,10 @@ def backtrace(parent,start,end,p_start,p_end):
             #print "id is", id, "next id is:" ,next_id
             neighbours = ryu.listSwitchLinks(id)['links'] #get neighbours
             #print "neighbours are:", neighbours
-            port_out, port_in = find_port(next_id,neighbours) # port_in = port for the next switch, port_out = port for this switch
+            port_out, port_in_next = find_port(next_id,neighbours) # port_in = port for the next switch, port_out = port for this switch
             print "id_in:",id,"port_in:", port_in,"id_out:",next_id , "port_out:", port_out
             ret.append(nodeDict(int(id),int(port_in), int(port_out)))
+            port_in = port_in_next
 
 
 # Calculates least distance path between A and B
