@@ -37,8 +37,8 @@ def installPathFlows(macHostA, macHostB, pathA2B):
         flow1.addAction(action1)
         flow2.addAction(action2)
 
-        ryu.insertFlow(link['dpid'], flow1)
-        ryu.insertFlow(link['dpid'], flow2)
+        ryu.insertFlow(str(link['dpid']), flow1)
+        ryu.insertFlow(str(link['dpid']), flow2)
 
     print "added flows"
     return
